@@ -1,0 +1,31 @@
+body {
+
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 90vh;
+    background-color: beige;
+
+}
+
+.menu {
+    padding: 1rem;
+    height: 60px;
+    width: 780px;
+    background-color: azure;
+}
+
+.menu > * {
+    border: 1px solid black;
+    margin-left: 10px;
+    background-color: lightblue;
+}
+button:hover {
+    cursor: pointer;
+    border: none;
+}
+canvas {
+    background-color: darkslategrey;
+    border: 5px solid lightgrey;
+}
