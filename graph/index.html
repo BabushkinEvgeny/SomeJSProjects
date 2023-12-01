@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Graph of Sine Function</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Настройки графика синусоиды</h2>
+      <div id="error"></div>
+      <div class="form-group">
+        <label for="width">Ширина (W):</label>
+        <input type="number" id="width" value="600" onchange="resizeCanvas()" />
+      </div>
+      <div class="form-group">
+        <label for="height">Высота (H):</label>
+        <input
+          type="number"
+          id="height"
+          value="400"
+          onchange="resizeCanvas()"
+        />
+      </div>
+      <div class="form-group">
+        <label for="amplitude">Амплитуда (A):</label>
+        <input type="number" id="amplitude" value="50" />
+      </div>
+      <div class="form-group">
+        <label for="period">Период (T):</label>
+        <input type="number" id="period" value="100" />
+      </div>
+      <div class="form-group">
+        <label for="phase">Фаза (F):</label>
+        <input type="number" id="phase" value="0" />
+      </div>
+      <div class="button-group">
+        <input
+          type="button"
+          value="Нарисовать график"
+          onclick="updateGraph()"
+        />
+      </div>
+
+      <canvas id="sineCanvas" width="600" height="400"></canvas>
+      <textarea id="dataPoints" readonly></textarea>
+    </div>
+
+    <script>
+      function drawGraph(A, T, F, canvasWidth, canvasHeight) {
+        var canvas = document.getElementById("sineCanvas");
+        var ctx = canvas.getContext("2d");
+
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        drawAxes(ctx, canvasWidth, canvasHeight);
+
+        ctx.beginPath();
+        var offsetX = canvasWidth / 2;
+        var offsetY = canvasHeight / 2;
+
+        for (var x = -offsetX; x < offsetX; x++) {
+          var y = A * Math.sin(x / T + F);
+          if (x == -offsetX) ctx.moveTo(x + offsetX, -y + offsetY);
+          else ctx.lineTo(x + offsetX, -y + offsetY);
+        }
+
+        ctx.stroke();
+
+        return collectDataPoints(A, T, F, offsetX, offsetY);
+      }
+
+      function drawAxes(ctx, canvasWidth, canvasHeight) {
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+
+        ctx.moveTo(0, canvasHeight / 2);
+        ctx.lineTo(canvasWidth, canvasHeight / 2);
+
+        ctx.moveTo(canvasWidth / 2, 0);
+        ctx.lineTo(canvasWidth / 2, canvasHeight);
+
+        ctx.stroke();
+      }
+
+      function collectDataPoints(A, T, F, offsetX, offsetY) {
+        var dataPoints = [];
+        for (var x = -offsetX; x < offsetX; x++) {
+          var y = A * Math.sin(x / T + F);
+          dataPoints.push({ x: x, y: y });
+        }
+        return dataPoints;
+      }
+
+      function updateGraph() {
+        if (!validateInput()) {
+          return;
+        }
+
+        var W = parseInt(document.getElementById("width").value);
+        var H = parseInt(document.getElementById("height").value);
+        var A = parseInt(document.getElementById("amplitude").value);
+        var T = parseInt(document.getElementById("period").value);
+        var F = parseInt(document.getElementById("phase").value);
+
+        var dataPoints = drawGraph(A, T, F, W, H);
+        document.getElementById("dataPoints").value = JSON.stringify(
+          dataPoints,
+          null,
+          2
+        );
+      }
+
+      function validateInput() {
+        var W = document.getElementById("width").value;
+        var H = document.getElementById("height").value;
+        var A = document.getElementById("amplitude").value;
+        var T = document.getElementById("period").value;
+        var F = document.getElementById("phase").value;
+
+        if (W === "" || H === "" || A === "" || T === "" || F === "") {
+          document.getElementById("error").textContent =
+            "Ошибка: все поля должны быть заполнены.";
+          return false;
+        }
+
+        if (isNaN(W) || isNaN(H) || isNaN(A) || isNaN(T) || isNaN(F)) {
+          document.getElementById("error").textContent =
+            "Ошибка: все поля должны содержать числовые значения.";
+          return false;
+        }
+
+        document.getElementById("error").textContent = "";
+        return true;
+      }
+
+      function resizeCanvas() {
+        if (!validateInput()) {
+          return;
+        }
+
+        var canvas = document.getElementById("sineCanvas");
+        var W = parseInt(document.getElementById("width").value);
+        var H = parseInt(document.getElementById("height").value);
+
+        canvas.width = W;
+        canvas.height = H;
+      }
+    </script>
+  </body>
+</html>
